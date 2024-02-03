@@ -46,7 +46,7 @@ export const validation = (product: {
   }
 
   if (!product.price || isNaN(Number(product.price))) {
-    errorObj.price = "Product price must not be empty";
+    errorObj.price = "Product price must be number";
   }
   return errorObj;
 };

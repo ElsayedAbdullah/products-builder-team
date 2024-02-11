@@ -12,6 +12,7 @@ import ErrorMsg from "./components/ErrorMsg";
 import Select from "./ui/Select";
 import ColorBall from "./ui/ColorBall";
 import { ProductName } from "./utils/types";
+import toast, { Toaster } from "react-hot-toast";
 
 const defaultProductObject = {
   id: "",
@@ -36,6 +37,7 @@ const emptyErrorObject = {
 function App() {
   const [isOpen, setIsOpen] = useState(false);
   const [isEditOpenModal, setIsEditOpenModal] = useState(false);
+  const [isOpenDeleteModal, setIsOpenDeleteModal] = useState(false);
   const [product, setProduct] = useState<IProduct>(defaultProductObject);
   const [productToEdit, setProductToEdit] =
     useState<IProduct>(defaultProductObject);
@@ -43,7 +45,7 @@ function App() {
   const [error, setError] = useState(emptyErrorObject);
   const [selectedCategory, setSelectedCategory] = useState(categories[0]);
   const [tempColors, setTempColors] = useState<string[]>([]);
-  console.log(productToEdit);
+
   // Handlers
   function closeModal() {
     setIsOpen(false);
@@ -52,6 +54,7 @@ function App() {
   function openModal() {
     setIsOpen(true);
     setError(emptyErrorObject);
+    setTempColors([]);
   }
   function closeEditModal() {
     setIsEditOpenModal(false);
@@ -59,6 +62,15 @@ function App() {
 
   function openEditModal() {
     setIsEditOpenModal(true);
+    setError(emptyErrorObject);
+  }
+
+  function closeDeleteModal() {
+    setIsOpenDeleteModal(false);
+  }
+
+  function openDeleteModal() {
+    setIsOpenDeleteModal(true);
     setError(emptyErrorObject);
   }
 
@@ -121,6 +133,7 @@ function App() {
       key={product.id}
       product={product}
       openEditModal={openEditModal}
+      openDeleteModal={openDeleteModal}
       setProductToEdit={setProductToEdit}
     />
   ));
@@ -170,7 +183,15 @@ function App() {
     ]);
     setProduct(defaultProductObject);
     closeModal();
+    toast("Product added successfully!", {
+      icon: "👏",
+      style: {
+        backgroundColor: "#222",
+        color: "white",
+      },
+    });
   };
+
   const onSubmitEditHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const { title, price, description, imageURL } = productToEdit;
@@ -203,6 +224,29 @@ function App() {
     setProductToEdit(defaultProductObject);
     closeEditModal();
     setTempColors([]);
+    toast("Product updated successfully!", {
+      icon: "👏",
+      style: {
+        backgroundColor: "#222",
+        color: "white",
+      },
+    });
+  };
+
+  const removeProductHandler = () => {
+    const copyProducts = [...products];
+    const filtered = copyProducts.filter(
+      (item) => item.id !== productToEdit.id
+    );
+    setProducts(filtered);
+    closeDeleteModal();
+    toast("Product deleted successfully!", {
+      icon: "👏",
+      style: {
+        backgroundColor: "#222",
+        color: "white",
+      },
+    });
   };
 
   return (
@@ -289,7 +333,9 @@ function App() {
 
           <Select
             selectedCategory={productToEdit.category}
-            setSelectedCategory={setSelectedCategory}
+            setSelectedCategory={(value) => {
+              setProductToEdit({ ...productToEdit, category: value });
+            }}
           />
 
           {/* colors */}
@@ -315,7 +361,7 @@ function App() {
               Submit
             </Button>
             <Button
-              onClick={closeModal}
+              onClick={closeEditModal}
               type="button"
               variant={"secondary"}
               size={"small"}
@@ -326,6 +372,35 @@ function App() {
           </div>
         </form>
       </Modal>
+      {/* delete product modal */}
+      <Modal
+        isOpen={isOpenDeleteModal}
+        closeModal={closeDeleteModal}
+        title={"Delete Product"}
+        description="Are you sure to delete this product"
+      >
+        {/* buttons */}
+        <div className="flex space-x-2 mt-4">
+          <Button
+            variant={"danger"}
+            size={"small"}
+            fullWidth
+            onClick={removeProductHandler}
+          >
+            Submit
+          </Button>
+          <Button
+            onClick={closeDeleteModal}
+            type="button"
+            variant={"secondary"}
+            size={"small"}
+            fullWidth
+          >
+            Cancel
+          </Button>
+        </div>
+      </Modal>
+      <Toaster />
     </>
   );
 }

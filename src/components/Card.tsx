@@ -9,6 +9,7 @@ import { formatCurrency } from "../utils/formatCurrency";
 interface IProps {
   product: IProduct;
   openEditModal: () => void;
+  openDeleteModal: () => void;
   setProductToEdit: (product: IProduct) => void;
   setTempColors: (value: string[]) => void;
 }
@@ -18,6 +19,7 @@ const Card = ({
   openEditModal,
   setProductToEdit,
   setTempColors,
+  openDeleteModal,
 }: IProps) => {
   const { title, description, price, imageURL, colors, category } = product;
   const renderProductColors = colors.map((color) => (
@@ -27,6 +29,12 @@ const Card = ({
     openEditModal();
     setProductToEdit(product);
     setTempColors(colors);
+  };
+
+  const onDeleteHandler = () => {
+    // removeProductHandler(id);
+    setProductToEdit(product);
+    openDeleteModal();
   };
   return (
     <div className="border border-gray-300 rounded-md flex flex-col gap-4 p-3 mx-auto w-full">
@@ -71,7 +79,12 @@ const Card = ({
           >
             Edit
           </Button>
-          <Button variant={"danger"} size={"small"} fullWidth>
+          <Button
+            variant={"danger"}
+            size={"small"}
+            fullWidth
+            onClick={onDeleteHandler}
+          >
             Delete
           </Button>
         </div>

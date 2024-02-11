@@ -8,13 +8,26 @@ import { formatCurrency } from "../utils/formatCurrency";
 
 interface IProps {
   product: IProduct;
+  openEditModal: () => void;
+  setProductToEdit: (product: IProduct) => void;
+  setTempColors: (value: string[]) => void;
 }
 
-const Card = ({ product }: IProps) => {
+const Card = ({
+  product,
+  openEditModal,
+  setProductToEdit,
+  setTempColors,
+}: IProps) => {
   const { title, description, price, imageURL, colors, category } = product;
   const renderProductColors = colors.map((color) => (
     <ColorBall key={color} color={color} />
   ));
+  const openEditHandler = () => {
+    openEditModal();
+    setProductToEdit(product);
+    setTempColors(colors);
+  };
   return (
     <div className="border border-gray-300 rounded-md flex flex-col gap-4 p-3 mx-auto w-full">
       <Image
@@ -50,7 +63,12 @@ const Card = ({ product }: IProps) => {
           </div>
         </div>
         <div className="flex items-center space-x-3">
-          <Button variant={"primary"} size={"small"} fullWidth>
+          <Button
+            variant={"primary"}
+            size={"small"}
+            fullWidth
+            onClick={openEditHandler}
+          >
             Edit
           </Button>
           <Button variant={"danger"} size={"small"} fullWidth>

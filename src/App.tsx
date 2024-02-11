@@ -11,6 +11,7 @@ import Input from "./ui/Input";
 import ErrorMsg from "./components/ErrorMsg";
 import Select from "./ui/Select";
 import ColorBall from "./ui/ColorBall";
+import { ProductName } from "./utils/types";
 
 const defaultProductObject = {
   id: "",
@@ -34,15 +35,15 @@ const emptyErrorObject = {
 
 function App() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isEditOpenModal, setIsEditOpenModal] = useState(false);
   const [product, setProduct] = useState<IProduct>(defaultProductObject);
-
+  const [productToEdit, setProductToEdit] =
+    useState<IProduct>(defaultProductObject);
   const [products, setProducts] = useState<IProduct[]>(productList);
   const [error, setError] = useState(emptyErrorObject);
   const [selectedCategory, setSelectedCategory] = useState(categories[0]);
   const [tempColors, setTempColors] = useState<string[]>([]);
-
-  console.log(tempColors);
-
+  console.log(productToEdit);
   // Handlers
   function closeModal() {
     setIsOpen(false);
@@ -52,10 +53,23 @@ function App() {
     setIsOpen(true);
     setError(emptyErrorObject);
   }
+  function closeEditModal() {
+    setIsEditOpenModal(false);
+  }
+
+  function openEditModal() {
+    setIsEditOpenModal(true);
+    setError(emptyErrorObject);
+  }
 
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
     setProduct({ ...product, [name]: value });
+    setError({ ...error, [name]: "" });
+  };
+  const onChangeEditHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value, name } = e.target;
+    setProductToEdit({ ...productToEdit, [name]: value });
     setError({ ...error, [name]: "" });
   };
 
@@ -77,8 +91,38 @@ function App() {
     )
   );
 
+  // renderFormEditInput
+  const renderFormEditInput = (
+    id: string,
+    label: string,
+    name: ProductName,
+    type: string
+  ) => {
+    return (
+      <div className="flex flex-col gap-1 my-2">
+        <label className="text-black" htmlFor={id}>
+          {label}:
+        </label>
+        <Input
+          onChange={onChangeEditHandler}
+          value={productToEdit[name]}
+          name={name}
+          id={id}
+          type={type}
+        />
+        <ErrorMsg msg={error[name]} />
+      </div>
+    );
+  };
+
   const renderProductCardList = products.map((product) => (
-    <Card key={product.id} product={product} />
+    <Card
+      setTempColors={setTempColors}
+      key={product.id}
+      product={product}
+      openEditModal={openEditModal}
+      setProductToEdit={setProductToEdit}
+    />
   ));
 
   const renderProductColors = colors.map((color) => (
@@ -86,11 +130,11 @@ function App() {
       key={color}
       color={color}
       onClick={() => {
-        if (!tempColors.includes(color)) {
-          setTempColors((prev) => [...prev, color]);
-        } else {
+        if (tempColors.includes(color)) {
           setTempColors((prev) => prev.filter((item) => item !== color));
+          return;
         }
+        setTempColors((prev) => [...prev, color]);
       }}
     />
   ));
@@ -126,6 +170,39 @@ function App() {
     ]);
     setProduct(defaultProductObject);
     closeModal();
+  };
+  const onSubmitEditHandler = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const { title, price, description, imageURL } = productToEdit;
+    // form validation
+    const validationErrors = validation({
+      title,
+      description,
+      imageURL,
+      price,
+    });
+
+    const hasErrorMsg = Object.values(validationErrors).some(
+      (value) => value !== ""
+    );
+
+    if (hasErrorMsg) {
+      setError(validationErrors);
+      return;
+    }
+    const updatedproductList = products.map((item) => {
+      if (item.id === productToEdit.id) {
+        return {
+          ...productToEdit,
+          colors: tempColors,
+        };
+      }
+      return item;
+    });
+    setProducts(updatedproductList);
+    setProductToEdit(defaultProductObject);
+    closeEditModal();
+    setTempColors([]);
   };
 
   return (
@@ -170,6 +247,67 @@ function App() {
               ))}
             </div>
           ) : null}
+
+          {/* buttons */}
+          <div className="flex space-x-2 mt-4">
+            <Button variant={"primary"} size={"small"} fullWidth>
+              Submit
+            </Button>
+            <Button
+              onClick={closeModal}
+              type="button"
+              variant={"secondary"}
+              size={"small"}
+              fullWidth
+            >
+              Cancel
+            </Button>
+          </div>
+        </form>
+      </Modal>
+      {/* Edit product modal */}
+      <Modal
+        isOpen={isEditOpenModal}
+        closeModal={closeEditModal}
+        title={"Edit Product"}
+      >
+        <form onSubmit={onSubmitEditHandler}>
+          {renderFormEditInput("title", "Product Title", "title", "text")}
+          {renderFormEditInput(
+            "description",
+            "Product Description",
+            "description",
+            "text"
+          )}
+          {renderFormEditInput("price", "Product Price", "price", "number")}
+          {renderFormEditInput(
+            "imageURL",
+            "Product imageURL",
+            "imageURL",
+            "text"
+          )}
+
+          <Select
+            selectedCategory={productToEdit.category}
+            setSelectedCategory={setSelectedCategory}
+          />
+
+          {/* colors */}
+          <div className="flex items-center gap-2 flex-wrap my-5">
+            {renderProductColors}
+          </div>
+
+          <div className="flex flex-wrap gap-1">
+            {tempColors.map((color) => (
+              <div
+                key={color}
+                className="p-1.5 rounded-md"
+                style={{ backgroundColor: color }}
+              >
+                {color}
+              </div>
+            ))}
+          </div>
 
           {/* buttons */}
           <div className="flex space-x-2 mt-4">

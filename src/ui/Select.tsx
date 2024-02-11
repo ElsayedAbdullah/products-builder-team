@@ -9,7 +9,7 @@ function classNames(...classes: string[]) {
 }
 
 interface IProps {
-  selectedCategory: ICategory;
+  selectedCategory: { name: string; imageURL: string };
   setSelectedCategory: (category: ICategory) => void;
 }
 

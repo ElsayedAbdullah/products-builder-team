@@ -13,6 +13,8 @@ import Select from "./ui/Select";
 import ColorBall from "./ui/ColorBall";
 import { ProductName } from "./utils/types";
 import toast, { Toaster } from "react-hot-toast";
+import Navbar from "./components/Navbar";
+import CartProvider from "./context/CartContext";
 
 const defaultProductObject = {
   id: "",
@@ -250,7 +252,9 @@ function App() {
   };
 
   return (
-    <>
+    <CartProvider>
+      <Navbar />
+
       <div className="container mx-auto">
         <div className="my-4">
           <div className="my-4 text-center">
@@ -401,7 +405,7 @@ function App() {
         </div>
       </Modal>
       <Toaster />
-    </>
+    </CartProvider>
   );
 }
 

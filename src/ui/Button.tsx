@@ -15,6 +15,7 @@ const buttonVariants = cva("rounded-md cursor-pointer duration-200", {
     variant: {
       primary: "bg-indigo-500 hover:bg-indigo-600",
       secondary: "bg-gray-500 hover:bg-gray-600",
+      success: "bg-green-500 hover:bg-green-600",
       danger: "bg-red-500 hover:bg-red-600",
     },
     size: { small: "p-2", medium: "p-4", large: "p-6" },

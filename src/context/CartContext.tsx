@@ -11,15 +11,15 @@ interface IInitialState {
   cartItems: ICartItem[];
   openCart: () => void;
   closeCart: () => void;
-  getItemQuantity: (id: string) => number;
-  increaseCartQuantity: (id: string) => void;
-  decreaseCartQuantity: (id: string) => void;
-  removeCartItem: (id: string) => void;
+  getItemQuantity: (id: number) => number;
+  increaseCartQuantity: (id: number) => void;
+  decreaseCartQuantity: (id: number) => void;
+  removeCartItem: (id: number) => void;
   cartQuantity: number;
 }
 
 interface ICartItem {
-  id: string;
+  id: number;
   quantity: number;
 }
 
@@ -29,20 +29,18 @@ export const CartContext = createContext(initState as IInitialState);
 const CartProvider = ({ children }: { children: ReactNode }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [cartItems, setCartItems] = useState<ICartItem[]>(
-    localStorage.getItem("products")!
+    localStorage.getItem("products")
       ? JSON.parse(localStorage.getItem("products")!)
       : []
   );
 
-  console.log(cartItems);
-
   useEffect(() => {
     localStorage.setItem("products", JSON.stringify(cartItems));
-    console.log(cartItems);
+    cartItems.length === 0 && setIsOpen(false);
   }, [cartItems]);
 
   // cart functionality
-  const getItemQuantity = (id: string) => {
+  const getItemQuantity = (id: number) => {
     return cartItems.find((item) => item.id === id)?.quantity || 0;
   };
 
@@ -53,7 +51,7 @@ const CartProvider = ({ children }: { children: ReactNode }) => {
   );
 
   //
-  const increaseCartQuantity = (id: string) => {
+  const increaseCartQuantity = (id: number) => {
     setCartItems((currentItems) => {
       if (currentItems.find((item) => item.id === id) == null) {
         return [...currentItems, { id, quantity: 1 }];
@@ -69,7 +67,7 @@ const CartProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  const decreaseCartQuantity = (id: string) => {
+  const decreaseCartQuantity = (id: number) => {
     setCartItems((currentItems) => {
       if (currentItems.find((item) => item.id === id)?.quantity === 1) {
         return currentItems.filter((item) => item.id !== id);
@@ -86,7 +84,7 @@ const CartProvider = ({ children }: { children: ReactNode }) => {
   };
 
   // remove cart item
-  const removeCartItem = (id: string) => {
+  const removeCartItem = (id: number) => {
     setCartItems((currentItems) =>
       currentItems.filter((item) => item.id !== id)
     );

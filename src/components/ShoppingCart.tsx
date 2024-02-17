@@ -3,11 +3,11 @@ import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useCart } from "../context/CartContext";
 import { productList } from "../data";
+import CartItem from "./CartItem";
 
 export default function ShoppingCart({ isOpen }: { isOpen: boolean }) {
-  const { closeCart, cartItems, getItemQuantity, removeCartItem } = useCart();
+  const { closeCart, cartItems } = useCart();
 
-  console.log(cartItems);
   return (
     <Transition.Root show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={closeCart}>
@@ -63,63 +63,9 @@ export default function ShoppingCart({ isOpen }: { isOpen: boolean }) {
                           >
                             <>
                               {cartItems.length ? (
-                                cartItems.map((product) => {
-                                  const item = productList.find(
-                                    (i) => i.id === product.id
-                                  );
-                                  if (!item) return;
-
-                                  return (
-                                    <li key={item.id} className="flex py-6">
-                                      <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-                                        <img
-                                          src={item.imageURL}
-                                          alt={item.title}
-                                          className="h-full w-full object-cover object-center"
-                                        />
-                                      </div>
-
-                                      <div className="ml-4 flex flex-1 flex-col">
-                                        <div>
-                                          <div className="flex justify-between text-base font-medium text-gray-900">
-                                            <h3>{item.title}</h3>
-                                            <p className="ml-4">
-                                              $
-                                              {item.id &&
-                                                item.price *
-                                                  getItemQuantity(item.id)}
-                                            </p>
-                                          </div>
-                                        </div>
-                                        <div className="flex flex-1 items-end justify-between text-sm">
-                                          <div>
-                                            <p className="text-gray-900 font-medium">
-                                              Price: ${item.price}
-                                            </p>
-                                            <p className="text-gray-500">
-                                              Qty{" "}
-                                              {item.id &&
-                                                getItemQuantity(item.id)}
-                                            </p>
-                                          </div>
-
-                                          <div className="flex">
-                                            <button
-                                              onClick={() => {
-                                                item.id &&
-                                                  removeCartItem(item.id);
-                                              }}
-                                              type="button"
-                                              className="font-medium text-indigo-600 hover:text-indigo-500"
-                                            >
-                                              Remove
-                                            </button>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </li>
-                                  );
-                                })
+                                cartItems.map((item) => (
+                                  <CartItem key={item.id} {...item} />
+                                ))
                               ) : (
                                 <p>No items</p>
                               )}

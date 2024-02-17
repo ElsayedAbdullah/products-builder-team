@@ -4,7 +4,6 @@ import { useState } from "react";
 import Modal from "./ui/Modal";
 // import { IProduct } from "./interfaces/index";
 import Card from "./components/Card";
-import { v4 as uuid } from "uuid";
 import { IProduct } from "./interfaces";
 import { validation } from "./validation/validation";
 import Input from "./ui/Input";
@@ -16,9 +15,10 @@ import toast, { Toaster } from "react-hot-toast";
 import Navbar from "./components/Navbar";
 import CartProvider from "./context/CartContext";
 import DeleteProductModal from "./components/modals/DeleteProductModal";
+import ProductDetailsPage from "./components/ProductDetails";
 
 const defaultProductObject = {
-  id: "",
+  id: 0,
   title: "",
   description: "",
   imageURL: "",
@@ -48,6 +48,9 @@ function App() {
   const [error, setError] = useState(emptyErrorObject);
   const [selectedCategory, setSelectedCategory] = useState(categories[0]);
   const [tempColors, setTempColors] = useState<string[]>([]);
+
+  // to show product details
+  const [selectedProduct, setSelectedProduct] = useState<IProduct | null>(null);
 
   // Handlers
   function closeModal() {
@@ -139,6 +142,7 @@ function App() {
       openEditModal={openEditModal}
       openDeleteModal={openDeleteModal}
       setProductToEdit={setProductToEdit}
+      setSelectedProduct={setSelectedProduct}
     />
   ));
 
@@ -178,7 +182,7 @@ function App() {
 
     setProducts((prev) => [
       {
-        id: uuid(),
+        id: products.length + 1,
         ...product,
         category: selectedCategory,
         colors: tempColors,
@@ -259,14 +263,23 @@ function App() {
 
       <div className="container mx-auto">
         <div className="my-4">
-          <div className="my-4 text-center">
-            <Button variant={"primary"} size={"small"} onClick={openModal}>
-              Add Product
-            </Button>
-          </div>
-          <div className="gap-4 grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {renderProductCardList}
-          </div>
+          {selectedProduct ? (
+            <ProductDetailsPage
+              selectedProduct={selectedProduct}
+              setSelectedProduct={setSelectedProduct}
+            />
+          ) : (
+            <>
+              <div className="my-4 text-center">
+                <Button variant={"primary"} size={"small"} onClick={openModal}>
+                  Add Product
+                </Button>
+              </div>
+              <div className="gap-4 grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {renderProductCardList}
+              </div>
+            </>
+          )}
         </div>
       </div>
 

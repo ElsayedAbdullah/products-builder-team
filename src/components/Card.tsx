@@ -11,6 +11,7 @@ interface IProps {
   product: IProduct;
   openEditModal: () => void;
   openDeleteModal: () => void;
+  setSelectedProduct: (product: IProduct) => void;
   setProductToEdit: (product: IProduct) => void;
   setTempColors: (value: string[]) => void;
 }
@@ -21,6 +22,7 @@ const Card = ({
   setProductToEdit,
   setTempColors,
   openDeleteModal,
+  setSelectedProduct,
 }: IProps) => {
   const { id, title, description, price, imageURL, colors, category } = product;
   const { increaseCartQuantity, getItemQuantity, decreaseCartQuantity } =
@@ -49,9 +51,13 @@ const Card = ({
         src={imageURL}
         alt={title}
       />
-      <Text className="font-bold text-lg" as={"h3"}>
+      <h3
+        className="font-bold text-lg"
+        style={{ cursor: "pointer" }}
+        onClick={() => setSelectedProduct(product)}
+      >
         {txtSlicer(title, 20)}
-      </Text>
+      </h3>
       <Text as={"p"}>{txtSlicer(description)}</Text>
 
       <div className="flex items-center gap-2 flex-wrap">

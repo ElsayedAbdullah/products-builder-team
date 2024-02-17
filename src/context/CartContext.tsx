@@ -1,12 +1,21 @@
-import { ReactNode, createContext, useContext, useState } from "react";
+import {
+  ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import ShoppingCart from "../components/ShoppingCart";
 
 interface IInitialState {
+  cartItems: ICartItem[];
   openCart: () => void;
   closeCart: () => void;
   getItemQuantity: (id: string) => number;
   increaseCartQuantity: (id: string) => void;
   decreaseCartQuantity: (id: string) => void;
+  removeCartItem: (id: string) => void;
+  cartQuantity: number;
 }
 
 interface ICartItem {
@@ -19,13 +28,31 @@ export const CartContext = createContext(initState as IInitialState);
 
 const CartProvider = ({ children }: { children: ReactNode }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [cartItems, setCartItems] = useState<ICartItem[]>([]);
+  const [cartItems, setCartItems] = useState<ICartItem[]>(
+    localStorage.getItem("products")!
+      ? JSON.parse(localStorage.getItem("products")!)
+      : []
+  );
+
+  console.log(cartItems);
+
+  useEffect(() => {
+    localStorage.setItem("products", JSON.stringify(cartItems));
+    console.log(cartItems);
+  }, [cartItems]);
 
   // cart functionality
   const getItemQuantity = (id: string) => {
     return cartItems.find((item) => item.id === id)?.quantity || 0;
   };
 
+  // cart quantity
+  const cartQuantity = cartItems.reduce(
+    (quantity, item) => quantity + item.quantity,
+    0
+  );
+
+  //
   const increaseCartQuantity = (id: string) => {
     setCartItems((currentItems) => {
       if (currentItems.find((item) => item.id === id) == null) {
@@ -58,6 +85,13 @@ const CartProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
+  // remove cart item
+  const removeCartItem = (id: string) => {
+    setCartItems((currentItems) =>
+      currentItems.filter((item) => item.id !== id)
+    );
+  };
+
   // open and close shopping cart
   const openCart = () => setIsOpen(true);
   const closeCart = () => setIsOpen(false);
@@ -65,11 +99,14 @@ const CartProvider = ({ children }: { children: ReactNode }) => {
   return (
     <CartContext.Provider
       value={{
+        cartItems,
+        cartQuantity,
         openCart,
         closeCart,
         getItemQuantity,
         increaseCartQuantity,
         decreaseCartQuantity,
+        removeCartItem,
       }}
     >
       {children}

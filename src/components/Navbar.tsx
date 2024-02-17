@@ -3,7 +3,7 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useCart } from "../context/CartContext";
 
 export default function Navbar() {
-  const { openCart } = useCart();
+  const { openCart, cartQuantity } = useCart();
   return (
     <Disclosure as="nav" className="bg-gray-800">
       {({ open }) => (
@@ -54,7 +54,7 @@ export default function Navbar() {
                     />
                   </svg>
                   <div className="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-2 -end-2 dark:border-gray-900">
-                    0
+                    {cartQuantity}
                   </div>
                 </button>
               </div>

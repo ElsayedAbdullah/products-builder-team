@@ -13,6 +13,9 @@ import Select from "./ui/Select";
 import ColorBall from "./ui/ColorBall";
 import { ProductName } from "./utils/types";
 import toast, { Toaster } from "react-hot-toast";
+import Navbar from "./components/Navbar";
+import CartProvider from "./context/CartContext";
+import DeleteProductModal from "./components/modals/DeleteProductModal";
 
 const defaultProductObject = {
   id: "",
@@ -79,6 +82,7 @@ function App() {
     setProduct({ ...product, [name]: value });
     setError({ ...error, [name]: "" });
   };
+
   const onChangeEditHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
     setProductToEdit({ ...productToEdit, [name]: value });
@@ -250,7 +254,9 @@ function App() {
   };
 
   return (
-    <>
+    <CartProvider>
+      <Navbar />
+
       <div className="container mx-auto">
         <div className="my-4">
           <div className="my-4 text-center">
@@ -263,6 +269,7 @@ function App() {
           </div>
         </div>
       </div>
+
       {/* Add product modal */}
       <Modal isOpen={isOpen} closeModal={closeModal} title={"Add Product"}>
         <form onSubmit={onSubmitHandler}>
@@ -309,6 +316,7 @@ function App() {
           </div>
         </form>
       </Modal>
+
       {/* Edit product modal */}
       <Modal
         isOpen={isEditOpenModal}
@@ -372,36 +380,14 @@ function App() {
           </div>
         </form>
       </Modal>
-      {/* delete product modal */}
-      <Modal
-        isOpen={isOpenDeleteModal}
-        closeModal={closeDeleteModal}
-        title={"Delete Product"}
-        description="Are you sure to delete this product"
-      >
-        {/* buttons */}
-        <div className="flex space-x-2 mt-4">
-          <Button
-            variant={"danger"}
-            size={"small"}
-            fullWidth
-            onClick={removeProductHandler}
-          >
-            Submit
-          </Button>
-          <Button
-            onClick={closeDeleteModal}
-            type="button"
-            variant={"secondary"}
-            size={"small"}
-            fullWidth
-          >
-            Cancel
-          </Button>
-        </div>
-      </Modal>
+
+      <DeleteProductModal
+        removeProductHandler={removeProductHandler}
+        closeDeleteModal={closeDeleteModal}
+        isOpenDeleteModal={isOpenDeleteModal}
+      />
       <Toaster />
-    </>
+    </CartProvider>
   );
 }
 

@@ -1,6 +1,6 @@
 import { categories, colors, formInputsList, productList } from "./data/index";
 import Button from "./ui/Button";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import Modal from "./ui/Modal";
 // import { IProduct } from "./interfaces/index";
 import Card from "./components/Card";
@@ -53,44 +53,51 @@ function App() {
   const [selectedProduct, setSelectedProduct] = useState<IProduct | null>(null);
 
   // Handlers
-  function closeModal() {
+  const closeModal = useCallback(() => {
     setIsOpen(false);
-  }
+  }, []);
 
-  function openModal() {
+  const openModal = useCallback(() => {
     setIsOpen(true);
     setError(emptyErrorObject);
     setTempColors([]);
-  }
-  function closeEditModal() {
-    setIsEditOpenModal(false);
-  }
+  }, []);
 
-  function openEditModal() {
+  const closeEditModal = useCallback(() => {
+    setIsEditOpenModal(false);
+  }, []);
+
+  const openEditModal = useCallback(() => {
     setIsEditOpenModal(true);
     setError(emptyErrorObject);
-  }
+  }, []);
 
-  function closeDeleteModal() {
+  const closeDeleteModal = useCallback(() => {
     setIsOpenDeleteModal(false);
-  }
+  }, []);
 
-  function openDeleteModal() {
+  const openDeleteModal = useCallback(() => {
     setIsOpenDeleteModal(true);
     setError(emptyErrorObject);
-  }
+  }, []);
 
-  const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value, name } = e.target;
-    setProduct({ ...product, [name]: value });
-    setError({ ...error, [name]: "" });
-  };
+  const onChangeHandler = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { value, name } = e.target;
+      setProduct((prev) => ({ ...prev, [name]: value }));
+      setError((prev) => ({ ...prev, [name]: "" }));
+    },
+    []
+  );
 
-  const onChangeEditHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value, name } = e.target;
-    setProductToEdit({ ...productToEdit, [name]: value });
-    setError({ ...error, [name]: "" });
-  };
+  const onChangeEditHandler = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { value, name } = e.target;
+      setProductToEdit((prev) => ({ ...prev, [name]: value }));
+      setError((prev) => ({ ...prev, [name]: "" }));
+    },
+    []
+  );
 
   const renderFormInputList = formInputsList.map(
     ({ id, label, type, name }) => (

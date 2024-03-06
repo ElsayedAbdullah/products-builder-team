@@ -1,4 +1,5 @@
-import { ReactNode } from "react";
+/* eslint-disable react-refresh/only-export-components */
+import { memo, ReactNode } from "react";
 import { cn } from "../utils/Clsx";
 import { cva, type VariantProps } from "class-variance-authority";
 
@@ -46,4 +47,4 @@ const Button = ({ children, variant, size, fullWidth, ...rest }: IProps) => {
   );
 };
 
-export default Button;
+export default memo(Button);

@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { IProduct } from "../interfaces";
 import ColorBall from "../ui/ColorBall";
 import { txtSlicer } from "../utils/txtSlicer";
@@ -6,6 +7,7 @@ import Button from "../ui/Button";
 import Text from "../ui/Text";
 import { formatCurrency } from "../utils/formatCurrency";
 import { useCart } from "../context/CartContext";
+import { memo } from "react";
 
 interface IProps {
   product: IProduct;
@@ -172,4 +174,4 @@ const Card = ({
   );
 };
 
-export default Card;
+export default memo(Card);
